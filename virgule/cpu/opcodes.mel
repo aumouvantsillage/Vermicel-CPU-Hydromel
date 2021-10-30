@@ -1,0 +1,43 @@
+#lang hydromel
+
+# Base opcodes.
+constant opcode_load   = b'0000011
+constant opcode_op_imm = b'0010011
+constant opcode_auipc  = b'0010111
+constant opcode_store  = b'0100011
+constant opcode_op     = b'0110011
+constant opcode_lui    = b'0110111
+constant opcode_branch = b'1100011
+constant opcode_jalr   = b'1100111
+constant opcode_jal    = b'1101111
+constant opcode_system = b'1110011
+
+# funct3 opcodes.
+constant funct3_jalr    = b'000
+constant funct3_beq     = b'000
+constant funct3_bne     = b'001
+constant funct3_blt     = b'100
+constant funct3_bge     = b'101
+constant funct3_bltu    = b'110
+constant funct3_bgeu    = b'111
+constant funct3_lb_sb   = b'000
+constant funct3_lh_sh   = b'001
+constant funct3_lw_sw   = b'010
+constant funct3_lbu     = b'100
+constant funct3_lhu     = b'101
+constant funct3_add_sub = b'000
+constant funct3_slt     = b'010
+constant funct3_sltu    = b'011
+constant funct3_xor     = b'100
+constant funct3_or      = b'110
+constant funct3_and     = b'111
+constant funct3_sll     = b'001
+constant funct3_srl_sra = b'101
+constant funct3_mret    = b'000
+
+# funct7 opcodes.
+constant funct7_default = b'0000000
+constant funct7_sub_sra = b'0100000
+
+# Immediate_encoded opcodes.
+constant imm_mret = b'001100000010
