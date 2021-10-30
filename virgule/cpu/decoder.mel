@@ -1,0 +1,92 @@
+#lang hydromel
+
+import "opcodes.mel"
+
+type register_index_t = unsigned(5)
+type funct3_t         = unsigned(3)
+type alu_fn_t         = unsigned(4) # TODO enumeration
+type word_t           = unsigned(32)
+type signed_word_t    = signed(32)
+
+# TODO remove when alu_fn_t is an enumeration
+constant alu_nop  = 1
+constant alu_add  = 2
+constant alu_sub  = 3
+constant alu_slt  = 4
+constant alu_sltu = 5
+constant alu_and  = 6
+constant alu_or   = 7
+constant alu_xor  = 8
+constant alu_sll  = 9
+constant alu_srl  = 10
+constant alu_sra  = 11
+
+interface instruction
+    port rd        : out register_index_t
+    port rs1       : out register_index_t
+    port rs2       : out register_index_t
+    port imm       : out signed_word_t
+    port funct3    : out funct3_t
+    port alu_fn    : out alu_fn_t
+    port use_pc    : out bit
+    port use_imm   : out bit
+    port has_rd    : out bit
+    port is_load   : out bit
+    port is_store  : out bit
+    port is_jump   : out bit
+    port is_branch : out bit
+    port is_mret   : out bit
+end
+
+component decoder
+    port data_i : in word_t
+    port instr : splice instruction
+
+    signal funct7 = data_i{31..25}
+    rs2           = data_i{24..20}
+    rs1           = data_i{19..15}
+    funct3        = data_i{14..12}
+    rd            = data_i{11.. 7}
+    signal opcode = data_i{ 6.. 0}
+
+    imm = case opcode of
+        opcode_op                => 0
+        opcode_store             => as_signed({funct7, rd})
+        opcode_branch            => as_signed({data_i{31}, data_i{7}, data_i{30..25}, data_i{11..8}, 0})
+        opcode_lui, opcode_auipc => as_signed({funct7, rs2, rs1, funct3}) << 12
+        opcode_jal               => as_signed({data_i{31}, rs1, funct3, data_i{20}, data_i{30..21}, 0})
+        _                        => as_signed({funct7, rs2})
+
+    alu_fn = case opcode of
+        opcode_lui => alu_nop
+        opcode_op, opcode_op_imm => (
+            case funct3 of
+                funct3_slt  => alu_slt
+                funct3_sltu => alu_sltu
+                funct3_and  => alu_and
+                funct3_or   => alu_or
+                funct3_xor  => alu_xor
+                funct3_sll  => alu_sll
+                funct3_srl_sra =>
+                    if funct7 == funct7_sub_sra then
+                        alu_sra
+                    else
+                        alu_srl
+                funct3_add_sub =>
+                    if opcode == opcode_op and funct7 == funct7_sub_sra then
+                        alu_sub
+                    else
+                        alu_add
+                _ => alu_add
+            )
+        _ => alu_add
+
+    use_pc    = opcode == opcode_auipc or opcode == opcode_jal or opcode == opcode_branch
+    use_imm   = opcode /= opcode_op
+    is_load   = opcode == opcode_load
+    is_store  = opcode == opcode_store
+    is_mret   = opcode == opcode_system and funct3 == funct3_mret and imm == imm_mret
+    is_jump   = opcode == opcode_jal or opcode == opcode_jalr
+    is_branch = opcode == opcode_branch
+    has_rd    = not (is_branch or is_store or rd == 0)
+end
