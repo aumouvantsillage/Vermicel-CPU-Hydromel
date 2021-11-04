@@ -46,6 +46,10 @@
       (it (* 4 n) symbol-table)
       it)))
 
+(define (fake-asm data)
+  (if (procedure? data)
+    (data 0 0)
+    data))
 
 ; Prepare an instruction encoder for the second pass.
 ; The resulting function will execute fn with the actual immediate value.

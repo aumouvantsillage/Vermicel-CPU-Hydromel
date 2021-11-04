@@ -127,17 +127,12 @@
     (list (AND   31  5     10)  'any funct3_and     'any 'any      'any alu_and  0       0       1      0       0        0       0         0)))
     ;                             rd funct3          rs1  rs2       imm alu_fn   use_pc use_imm has_rd is_load is_store is_jump is_branch is_mret
 
-(define (fake-asm data)
-  (if (procedure? data)
-    (data 0  0)
-    data))
-
 (define test-count (length test-cases))
 
 (define lst-data (map fake-asm (map first test-cases)))
 
 (define inst (decoder-make))
-(slot-set! (inst data_i) (list->signal lst-data))
+(slot-set! (inst data) (list->signal lst-data))
 
 (define slot-names '(rd funct3 rs1 rs2 imm
                      alu_fn use_pc use_imm has_rd

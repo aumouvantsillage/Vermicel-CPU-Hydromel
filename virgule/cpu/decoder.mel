@@ -39,22 +39,22 @@ interface instruction
 end
 
 component decoder
-    port data_i : in word_t
+    port data  : in word_t
     port instr : splice instruction
 
-    signal funct7 = data_i{31..25}
-    rs2           = data_i{24..20}
-    rs1           = data_i{19..15}
-    funct3        = data_i{14..12}
-    rd            = data_i{11.. 7}
-    signal opcode = data_i{ 6.. 0}
+    signal funct7 = data{31..25}
+    rs2           = data{24..20}
+    rs1           = data{19..15}
+    funct3        = data{14..12}
+    rd            = data{11.. 7}
+    signal opcode = data{ 6.. 0}
 
     imm = case opcode of
         opcode_op                => 0
         opcode_store             => as_signed({funct7, rd})
-        opcode_branch            => as_signed({data_i{31}, data_i{7}, data_i{30..25}, data_i{11..8}, 0})
+        opcode_branch            => as_signed({data{31}, data{7}, data{30..25}, data{11..8}, 0})
         opcode_lui, opcode_auipc => as_signed({funct7, rs2, rs1, funct3}) << 12
-        opcode_jal               => as_signed({data_i{31}, rs1, funct3, data_i{20}, data_i{30..21}, 0})
+        opcode_jal               => as_signed({data{31}, rs1, funct3, data{20}, data{30..21}, 0})
         _                        => as_signed({funct7, rs2})
 
     alu_fn = case opcode of
