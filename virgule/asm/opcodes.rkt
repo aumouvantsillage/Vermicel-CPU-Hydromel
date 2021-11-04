@@ -4,59 +4,69 @@
 
 #lang racket
 
-(require hydromel/lib/numeric)
+(require
+  "../cpu/opcodes.mel"
+  hydromel/lib/numeric
+  hydromel/lib/slot
+  syntax/parse/define
+  (for-syntax racket/syntax))
 
 (provide (all-defined-out))
 
-; Base opcodes.
-(define opcode-load   #b0000011)
-(define opcode-op-imm #b0010011)
-(define opcode-auipc  #b0010111)
-(define opcode-store  #b0100011)
-(define opcode-op     #b0110011)
-(define opcode-lui    #b0110111)
-(define opcode-branch #b1100011)
-(define opcode-jalr   #b1100111)
-(define opcode-jal    #b1101111)
-(define opcode-system #b1110011)
+(define-syntax-parser hydromel-constants
+  [(_ hd tl ...)
+   #:with name (format-id #'hd "~a-constant" #'hd)
+   #'(begin
+       (provide hd)
+       (define hd (slot-data name))
+       (hydromel-constants tl ...))]
 
-; funct3 opcodes.
-(define funct3-jalr    #b000)
-(define funct3-beq     #b000)
-(define funct3-bne     #b001)
-(define funct3-blt     #b100)
-(define funct3-bge     #b101)
-(define funct3-bltu    #b110)
-(define funct3-bgeu    #b111)
-(define funct3-lb-sb   #b000)
-(define funct3-lh-sh   #b001)
-(define funct3-lw-sw   #b010)
-(define funct3-lbu     #b100)
-(define funct3-lhu     #b101)
-(define funct3-add-sub #b000)
-(define funct3-slt     #b010)
-(define funct3-sltu    #b011)
-(define funct3-xor     #b100)
-(define funct3-or      #b110)
-(define funct3-and     #b111)
-(define funct3-sll     #b001)
-(define funct3-srl-sra #b101)
-(define funct3-mret    #b000)
+  [(_)
+   #'(begin)])
 
-; funct7 opcodes.
-(define funct7-default #b0000000)
-(define funct7-sub-sra #b0100000)
-
-; Immediate-encoded opcodes.
-(define imm-mret #b001100000010)
+(hydromel-constants
+  opcode_load
+  opcode_op_imm
+  opcode_auipc
+  opcode_store
+  opcode_op
+  opcode_lui
+  opcode_branch
+  opcode_jalr
+  opcode_jal
+  opcode_system
+  funct3_jalr
+  funct3_beq
+  funct3_bne
+  funct3_blt
+  funct3_bge
+  funct3_bltu
+  funct3_bgeu
+  funct3_lb_sb
+  funct3_lh_sh
+  funct3_lw_sw
+  funct3_lbu
+  funct3_lhu
+  funct3_add_sub
+  funct3_slt
+  funct3_sltu
+  funct3_xor
+  funct3_or
+  funct3_and
+  funct3_sll
+  funct3_srl_sra
+  funct3_mret
+  funct7_default
+  funct7_sub_sra
+  imm_mret)
 
 (define (instruction-fmt opcode)
   (match opcode
-    [(== opcode-op)                         'fmt-r]
-    [(== opcode-store)                      'fmt-s]
-    [(== opcode-branch)                     'fmt-b]
-    [(or (== opcode-lui) (== opcode-auipc)) 'fmt-u]
-    [(== opcode-jal)                        'fmt-j]
+    [(== opcode_op)                         'fmt-r]
+    [(== opcode_store)                      'fmt-s]
+    [(== opcode_branch)                     'fmt-b]
+    [(or (== opcode_lui) (== opcode_auipc)) 'fmt-u]
+    [(== opcode_jal)                        'fmt-j]
     [_                                      'fmt-i]))
 
 (define (word->fields w)
@@ -78,9 +88,9 @@
 
 (define (fields->word opcode #:rd [rd 0] #:funct3 [fn3 0] #:rs1 [rs1 0] #:rs2 [rs2 0] #:funct7 [fn7 0] #:imm [imm 0])
   ; Immediate shift instructions have a funct7 field and a shorter imm field.
-  (define imm* (if (and (= opcode opcode-op-imm)
-                        (or (= fn3 funct3-sll)
-                            (= fn3 funct3-srl-sra)))
+  (define imm* (if (and (= opcode opcode_op_imm)
+                        (or (= fn3 funct3_sll)
+                            (= fn3 funct3_srl_sra)))
                  (unsigned-concat [fn7 6 0] [imm 4 0])
                  imm))
 
