@@ -128,7 +128,7 @@
 
 (define (fake-asm data)
   (if (procedure? data)
-    (data 0  0 )
+    (data 0  0)
     data))
 
 (define test-count (length test-cases))
