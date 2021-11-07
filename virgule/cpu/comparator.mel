@@ -1,0 +1,23 @@
+#lang hydromel
+
+import "decoder.mel"
+import "opcodes.mel"
+
+component comparator
+    port instr : splice flip instruction
+    port a     : in word_t
+    port b     : in word_t
+    port taken : out bit
+
+    signal sa = cast(signed_word_t, a)
+    signal sb = cast(signed_word_t, b)
+
+    taken = case funct3 of
+        funct3_beq  => a  == b
+        funct3_bne  => a  /= b
+        funct3_blt  => sa <  sb
+        funct3_bge  => sa >= sb
+        funct3_bltu => a  <  b
+        funct3_bgeu => a  >= b
+        _           => 0
+end
