@@ -1,0 +1,21 @@
+#lang hydromel
+
+import "decoder.mel"
+
+component register_unit(N : natural)
+    port src_instr  : flip instruction
+    port dest_instr : flip instruction
+    port reset      : in bit
+    port enable     : in bit
+    port xd         : in word_t
+    port xs1        : out word_t
+    port xs2        : out word_t
+
+    signal x : array(N, word_t) = register(
+        [0 for n in 0 .. N-1] when reset,
+        [if dest_instr.rd == n then xd else x[n] for n in 0 .. N-1] when enable and dest_instr.has_rd
+        # replace(x, dest_instr.rd, xd) when enable and dest_instr.has_rd
+    )
+    xs1 = x[src_instr.rs1]
+    xs2 = x[src_instr.rs2]
+end
