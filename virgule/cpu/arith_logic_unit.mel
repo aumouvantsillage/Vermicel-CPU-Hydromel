@@ -8,20 +8,20 @@ component arith_logic_unit
     port b     : in word_t
     port r     : out word_t
 
-    signal sa = cast(signed_word_t, a)
-    signal sb = cast(signed_word_t, b)
+    signal sa = a as signed_word_t
+    signal sb = b as signed_word_t
     signal sh = b{5 .. 0}
 
     r = case alu_fn of
         alu_nop  => b
-        alu_add  => cast(word_t, a + b)
-        alu_sub  => cast(word_t, a - b)
+        alu_add  => (a + b) as word_t
+        alu_sub  => (a - b) as word_t
         alu_slt  => if sa < sb then 1 else 0
         alu_sltu => if a  < b  then 1 else 0
         alu_xor  => a xor b
         alu_or   => a or  b
         alu_and  => a and b
-        alu_sll  => cast(word_t, a << sh)
+        alu_sll  => (a << sh) as word_t
         alu_srl  => a >> sh
-        alu_sra  => cast(word_t, sa >> sh)
+        alu_sra  => (sa >> sh) as word_t
 end

@@ -9,8 +9,8 @@ component comparator
     port b     : in word_t
     port taken : out bit
 
-    signal sa = cast(signed_word_t, a)
-    signal sb = cast(signed_word_t, b)
+    signal sa = a as signed_word_t
+    signal sb = b as signed_word_t
 
     taken = case funct3 of
         funct3_beq  => a  == b
