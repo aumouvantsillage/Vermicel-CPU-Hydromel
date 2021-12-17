@@ -51,11 +51,11 @@ component decoder
 
     imm = case opcode of
         opcode_op                => 0
-        opcode_store             => as_signed({funct7, rd})
-        opcode_branch            => as_signed({data{31}, data{7}, data{30..25}, data{11..8}, 0})
-        opcode_lui, opcode_auipc => as_signed({funct7, rs2, rs1, funct3}) << 12
-        opcode_jal               => as_signed({data{31}, rs1, funct3, data{20}, data{30..21}, 0})
-        _                        => as_signed({funct7, rs2})
+        opcode_store             => {funct7, rd} as integer
+        opcode_branch            => {data{31}, data{7}, data{30..25}, data{11..8}, 0} as integer
+        opcode_lui, opcode_auipc => ({funct7, rs2, rs1, funct3} << 12) as integer
+        opcode_jal               => {data{31}, rs1, funct3, data{20}, data{30..21}, 0} as integer
+        _                        => {funct7, rs2} as integer
 
     alu_fn = case opcode of
         opcode_lui => alu_nop
