@@ -9,14 +9,11 @@ component comparator
     port b     : in word_t
     port taken : out bit
 
-    signal sa = a as signed_word_t
-    signal sb = b as signed_word_t
-
     taken = case funct3 of
         funct3_beq  => a  == b
         funct3_bne  => a  /= b
-        funct3_blt  => sa <  sb
-        funct3_bge  => sa >= sb
+        funct3_blt  => (a as integer) <  (b as integer)
+        funct3_bge  => (a as integer) >= (b as integer)
         funct3_bltu => a  <  b
         funct3_bgeu => a  >= b
         _           => 0
