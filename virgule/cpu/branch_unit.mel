@@ -4,16 +4,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import "common.mel"
 import "decoder.mel"
 import "comparator.mel"
 
 constant irq_address = 4
 
 component branch_unit
-    port instr   : splice flip instruction
     port reset   : in bit
     port enable  : in bit
     port irq     : in bit
+    port instr   : splice flip instruction
     port xs1     : in word_t
     port xs2     : in word_t
     port address : in word_t

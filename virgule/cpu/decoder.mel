@@ -4,13 +4,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import "common.mel"
 import "opcodes.mel"
 
 type register_index_t = unsigned(5)
 type funct3_t         = unsigned(3)
 type alu_fn_t         = unsigned(4) # TODO enumeration
-type word_t           = unsigned(32)
-type signed_word_t    = signed(32)
 
 # TODO remove when alu_fn_t is an enumeration
 constant alu_nop  = 1

@@ -1,0 +1,127 @@
+#lang hydromel
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+import "common.mel"
+import "decoder.mel"
+import "register_unit.mel"
+import "arith_logic_unit.mel"
+import "branch_unit.mel"
+import "load_store_unit.mel"
+
+component virgule
+    port reset   : in bit
+    port valid   : out bit
+    port ready   : in bit
+    port address : out word_t
+    port wstrobe : out wstrobe_t
+    port wdata   : out word_t
+    port rdata   : in word_t
+    port irq     : in bit
+
+    #
+    # Sequencer:
+    # state machine with one-hot encoding.
+    #
+
+    # TODO We could use a record type here
+    constant state_fetch     = b'000001
+    constant state_decode    = b'000010
+    constant state_execute   = b'000100
+    constant state_load      = b'001000
+    constant state_store     = b'010000
+    constant state_writeback = b'100000
+
+    signal state : unsigned(6) = register(
+        state_fetch when reset,
+        case state of
+            state_fetch     => if ready then state_decode else state
+            state_decode    => state_execute
+            state_execute   => if     dec.instr.is_load  then state_load
+                               elseif dec.instr.is_store then state_store
+                               elseif dec.instr.has_rd   then state_writeback
+                               else                           state_fetch
+            state_load      => if ready then state_writeback else state
+            state_store     => if ready then state_fetch     else state
+            state_writeback => state_fetch
+            _               => state_fetch
+    )
+
+    signal fetch_en     = state[0]
+    signal decode_en    = state[1]
+    signal execute_en   = state[2]
+    signal load_en      = state[3]
+    signal store_en     = state[4]
+    signal writeback_en = state[5]
+
+    #
+    # Instruction decoding:
+    # decode, read registers, select ALU operands.
+    #
+
+    instance dec     = decoder
+    dec.data         = rdata_reg
+    signal instr_reg = register(instr_nop, dec.instr when decode_en)
+
+    instance regs  = register_unit
+    regs.reset     = reset
+    regs.src_instr = dec.instr
+    signal xs1_reg = register(0, regs.xs1 when decode_en)
+    signal xs2_reg = register(0, regs.xs2 when decode_en)
+
+    signal alu_a_reg = register(0, if dec.instr.use_pc  then pc            else regs.xs1 when decode_en)
+    signal alu_b_reg = register(0, if dec.instr.use_imm then dec.instr.imm else regs.xs2 when decode_en)
+
+    #
+    # Instruction execution:
+    # compute ALU and comparator results, compute branch address,
+    # update program counter.
+    #
+
+    instance alu     = arith_logic_unit
+    alu.a            = alu_a_reg
+    alu.b            = alu_b_reg
+    signal alu_r_reg = register(0, alu.r when execute_en)
+
+    instance branch = branch_unit
+    branch.reset    = reset
+    branch.enable   = execute_en
+    branch.irq      = irq
+    branch.instr    = instr_reg
+    branch.xs1      = xs1_reg
+    branch.xs2      = xs2_reg
+    branch.address  = alu.r
+    branch.pc_next  = pc + 4 as word_t
+    signal pc       = register(0 when reset, branch.pc when execute_en)
+
+    signal pc_next_reg = register(0, branch.pc_next when execute_en)
+
+
+    #
+    # Memory access:
+    # align data to/from memory, drive control outputs.
+    #
+
+    signal rdata_reg = register(0, rdata when valid and ready)
+    valid            = fetch_en or load_en or store_en
+    address          = if fetch_en then pc else alu_r_reg
+
+    instance ld_st   = load_store_unit
+    ld_st.instr      = instr_reg
+    ld_st.address    = alu_r_reg
+    ld_st.enable     = store_en
+    ld_st.store_data = xs2_reg
+    ld_st.rdata      = rdata_reg
+
+    #
+    # Write back
+    #
+
+    regs.enable     = writeback_en
+    regs.dest_instr = instr_reg
+    regs.xd         = if     instr_reg.is_load then load_data
+                      elseif instr_reg.is_jump then pc_next_reg
+                      else                          alu_r_reg
+end

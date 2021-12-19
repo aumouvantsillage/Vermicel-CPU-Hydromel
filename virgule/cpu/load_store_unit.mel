@@ -4,6 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import "common.mel"
 import "decoder.mel"
 import "opcodes.mel"
 
@@ -14,7 +15,7 @@ component load_store_unit
     port store_data   : in word_t
     port load_data    : out word_t
     port rdata        : in word_t
-    port wstrobe      : out unsigned(4)
+    port wstrobe      : out wstrobe_t
     port wdata        : out word_t
 
     signal align = address[1 .. 0]

@@ -5,6 +5,7 @@
 #lang racket
 
 (require
+  "../cpu/common.mel"
   "../cpu/decoder.mel"
   "../cpu/register_unit.mel"
   "../asm/assembler.rkt"
