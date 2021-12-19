@@ -1,0 +1,47 @@
+#lang hydromel
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+import "decoder.mel"
+import "comparator.mel"
+
+constant irq_address = 4
+
+component branch_unit
+    port instr   : splice flip instruction
+    port reset   : in bit
+    port enable  : in bit
+    port irq     : in bit
+    port xs1     : in word_t
+    port xs2     : in word_t
+    port address : in word_t
+    port pc_next : in word_t
+    port pc      : out word_t
+
+    instance cmp = comparator
+    cmp.instr = instr
+    cmp.a     = xs1
+    cmp.b     = xs2
+
+    signal pc_target = if is_mret then
+            mepc
+        elseif is_jump or (is_branch and cmp.taken) then
+            address[31 .. 2] << 2
+        else
+            pc_next
+
+    signal irq_state = register(0 when reset,
+                                if is_mret then 0
+                                elseif irq then 1
+                                else            irq_state
+                                when enable)
+
+    signal accept_irq = irq and not irq_state
+
+    signal mepc = register(0 when reset,
+                           pc_target when enable and accept_irq)
+
+    pc = if accept_irq then irq_address else pc_target
+end
