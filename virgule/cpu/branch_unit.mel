@@ -14,7 +14,7 @@ component branch_unit
     port reset   : in bit
     port enable  : in bit
     port irq     : in bit
-    port instr   : splice flip instruction
+    port instr   : in instruction_t
     port xs1     : in word_t
     port xs2     : in word_t
     port address : in word_t
@@ -26,17 +26,17 @@ component branch_unit
     cmp.a     = xs1
     cmp.b     = xs2
 
-    signal pc_target = if is_mret then
+    signal pc_target = if instr.is_mret then
             mepc
-        elseif is_jump or (is_branch and cmp.taken) then
+        elseif instr.is_jump or (instr.is_branch and cmp.taken) then
             address[31 .. 2] << 2
         else
             pc_next
 
     signal irq_state = register(0 when reset,
-                                if is_mret then 0
-                                elseif irq then 1
-                                else            irq_state
+                                if     instr.is_mret then 0
+                                elseif irq           then 1
+                                else                      irq_state
                                 when enable)
 
     signal accept_irq = irq and not irq_state

@@ -61,11 +61,11 @@
 (slot-set! (dec-dest-inst data) (list->signal lst-dest-data))
 
 (define reg-inst (register_unit-make 32))
-(connect (slot-ref* dec-src-inst  instr) (slot-ref* reg-inst src_instr))
-(connect (slot-ref* dec-dest-inst instr) (slot-ref* reg-inst dest_instr))
-(slot-set! (reg-inst reset)  (signal 0))
-(slot-set! (reg-inst enable) (list->signal lst-enable))
-(slot-set! (reg-inst xd)     (list->signal lst-xd))
+(slot-set! (reg-inst src_instr)  (slot-ref dec-src-inst  instr))
+(slot-set! (reg-inst dest_instr) (slot-ref dec-dest-inst instr))
+(slot-set! (reg-inst reset)      (signal 0))
+(slot-set! (reg-inst enable)     (list->signal lst-enable))
+(slot-set! (reg-inst xd)         (list->signal lst-xd))
 
 (define lst-xs1 (signal-take (slot-ref reg-inst xs1) test-count))
 (define lst-xs2 (signal-take (slot-ref reg-inst xs2) test-count))

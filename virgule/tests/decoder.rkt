@@ -134,12 +134,15 @@
 (define inst (decoder-make))
 (slot-set! (inst data) (list->signal lst-data))
 
-(define slot-names '(rd funct3 rs1 rs2 imm
-                     alu_fn use_pc use_imm has_rd
-                     is_load is_store is_jump is_branch is_mret))
+(define field-names '(rd funct3 rs1 rs2 imm
+                      alu_fn use_pc use_imm has_rd
+                      is_load is_store is_jump is_branch is_mret))
 
-(for ([(name i) (in-indexed slot-names)])
-  (for ([(res j) (in-indexed (signal-take (slot-data (dict-ref inst name)) test-count))])
+(define lst-instr (signal-take (slot-ref inst instr) test-count))
+
+(for ([(name i) (in-indexed field-names)])
+  (for ([(instr j) (in-indexed lst-instr)])
+    (define res (dict-ref instr name))
     (define ex (list-ref (list-ref test-cases j) (add1 i)))
     (when (not (equal? 'any ex))
       (test-equal? (format "Decoder #~a: ~a" j name) res ex))))

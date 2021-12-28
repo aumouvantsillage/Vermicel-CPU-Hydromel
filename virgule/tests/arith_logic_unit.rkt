@@ -53,9 +53,9 @@
 (slot-set! (dec-inst data) (list->signal lst-data))
 
 (define alu-inst (arith_logic_unit-make))
-(connect (slot-ref* dec-inst instr) (slot-ref* alu-inst instr))
-(slot-set! (alu-inst a) (list->signal lst-a))
-(slot-set! (alu-inst b) (list->signal lst-b))
+(slot-set! (alu-inst instr) (slot-ref dec-inst instr))
+(slot-set! (alu-inst a)     (list->signal lst-a))
+(slot-set! (alu-inst b)     (list->signal lst-b))
 
 (define lst-r (signal-take (slot-ref alu-inst r) test-count))
 

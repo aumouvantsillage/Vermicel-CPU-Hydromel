@@ -98,22 +98,21 @@ component virgule
 
     signal pc_next_reg = register(0, branch.pc_next when execute_en)
 
-
     #
     # Memory access:
     # align data to/from memory, drive control outputs.
     #
 
-    signal rdata_reg = register(0, rdata when valid and ready)
-    valid            = fetch_en or load_en or store_en
-    address          = if fetch_en then pc else alu_r_reg
+    signal rdata_reg   = register(0, rdata when valid and ready)
+    valid              = fetch_en or load_en or store_en
+    address            = if fetch_en then pc else alu_r_reg
 
-    instance ld_st   = load_store_unit
-    ld_st.instr      = instr_reg
-    ld_st.address    = alu_r_reg
-    ld_st.enable     = store_en
-    ld_st.store_data = xs2_reg
-    ld_st.rdata      = rdata_reg
+    instance ld_st     = load_store_unit
+    ld_st.instr        = instr_reg
+    ld_st.address      = alu_r_reg
+    ld_st.store_enable = store_en
+    ld_st.store_data   = xs2_reg
+    ld_st.rdata        = rdata_reg
 
     #
     # Write back
@@ -121,7 +120,7 @@ component virgule
 
     regs.enable     = writeback_en
     regs.dest_instr = instr_reg
-    regs.xd         = if     instr_reg.is_load then load_data
+    regs.xd         = if     instr_reg.is_load then ld_st.load_data
                       elseif instr_reg.is_jump then pc_next_reg
                       else                          alu_r_reg
 end

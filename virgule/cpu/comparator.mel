@@ -9,12 +9,12 @@ import "decoder.mel"
 import "opcodes.mel"
 
 component comparator
-    port instr : splice flip instruction
+    port instr : in instruction_t
     port a     : in word_t
     port b     : in word_t
     port taken : out bit
 
-    taken = case funct3 of
+    taken = case instr.funct3 of
         funct3_beq  => a  == b
         funct3_bne  => a  /= b
         funct3_blt  => (a as integer) <  (b as integer)

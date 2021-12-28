@@ -60,9 +60,9 @@
 (slot-set! (dec-inst data) (list->signal lst-data))
 
 (define cmp-inst (comparator-make))
-(connect (slot-ref* dec-inst instr) (slot-ref* cmp-inst instr))
-(slot-set! (cmp-inst a) (list->signal lst-a))
-(slot-set! (cmp-inst b) (list->signal lst-b))
+(slot-set! (cmp-inst instr) (slot-ref dec-inst instr))
+(slot-set! (cmp-inst a)     (list->signal lst-a))
+(slot-set! (cmp-inst b)     (list->signal lst-b))
 
 (define lst-r (signal-take (slot-ref cmp-inst taken) test-count))
 

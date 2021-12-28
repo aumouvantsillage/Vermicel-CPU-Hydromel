@@ -8,14 +8,14 @@ import "common.mel"
 import "decoder.mel"
 
 component arith_logic_unit
-    port instr : splice flip instruction
+    port instr : in instruction_t
     port a     : in word_t
     port b     : in word_t
     port r     : out word_t
 
     signal sh = b{5 .. 0}
 
-    r = case alu_fn of
+    r = case instr.alu_fn of
         alu_nop  => b
         alu_add  => (a + b) as word_t
         alu_sub  => (a - b) as word_t

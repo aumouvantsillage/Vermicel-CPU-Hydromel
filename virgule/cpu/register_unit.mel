@@ -8,8 +8,8 @@ import "common.mel"
 import "decoder.mel"
 
 component register_unit(N : natural)
-    port src_instr  : flip instruction
-    port dest_instr : flip instruction
+    port src_instr  : in instruction_t
+    port dest_instr : in instruction_t
     port reset      : in bit
     port enable     : in bit
     port xd         : in word_t

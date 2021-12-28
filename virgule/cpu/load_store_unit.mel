@@ -9,7 +9,7 @@ import "decoder.mel"
 import "opcodes.mel"
 
 component load_store_unit
-    port instr        : splice flip instruction
+    port instr        : in instruction_t
     port address      : in word_t
     port store_enable : in bit
     port store_data   : in word_t
@@ -20,13 +20,13 @@ component load_store_unit
 
     signal align = address[1 .. 0]
 
-    wdata = case funct3 of
-        funct3_lb_sb, funct3_lbu => {store_data[7 .. 0], store_data[7 .. 0], store_data[7 .. 0], store_data[7 .. 0]}
+    wdata = case instr.funct3 of
+        funct3_lb_sb, funct3_lbu => {store_data[ 7 .. 0], store_data[ 7 .. 0], store_data[7 .. 0], store_data[7 .. 0]}
         funct3_lh_sh, funct3_lhu => {store_data[15 .. 0], store_data[15 .. 0]}
         _                        => store_data
 
     wstrobe = if store_enable then
-            case funct3 of
+            case instr.funct3 of
                 funct3_lb_sb, funct3_lbu => b'0001 << align
                 funct3_lh_sh, funct3_lhu => b'0011 << align
                 funct3_lw_sw             => b'1111
@@ -36,7 +36,7 @@ component load_store_unit
 
     signal aligned_rdata = rdata >> (align * 8)
 
-    load_data = case funct3 of
+    load_data = case instr.funct3 of
         funct3_lb_sb => aligned_rdata[7  .. 0] as integer
         funct3_lbu   => aligned_rdata[7  .. 0]
         funct3_lh_sh => aligned_rdata[15 .. 0] as integer

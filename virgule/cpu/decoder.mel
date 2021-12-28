@@ -24,35 +24,52 @@ constant alu_sll  = 9
 constant alu_srl  = 10
 constant alu_sra  = 11
 
-interface instruction
-    port rd        : out register_index_t
-    port rs1       : out register_index_t
-    port rs2       : out register_index_t
-    port imm       : out signed_word_t
-    port funct3    : out funct3_t
-    port alu_fn    : out alu_fn_t
-    port use_pc    : out bit
-    port use_imm   : out bit
-    port has_rd    : out bit
-    port is_load   : out bit
-    port is_store  : out bit
-    port is_jump   : out bit
-    port is_branch : out bit
-    port is_mret   : out bit
-end
+type instruction_t = record(
+    rd        : register_index_t,
+    rs1       : register_index_t,
+    rs2       : register_index_t,
+    imm       : signed_word_t,
+    funct3    : funct3_t,
+    alu_fn    : alu_fn_t,
+    use_pc    : bit,
+    use_imm   : bit,
+    has_rd    : bit,
+    is_load   : bit,
+    is_store  : bit,
+    is_jump   : bit,
+    is_branch : bit,
+    is_mret   : bit,
+)
+
+constant instr_nop = (
+    rd        => 0,
+    rs1       => 0,
+    rs2       => 0,
+    imm       => 0,
+    funct3    => funct3_add_sub,
+    alu_fn    => alu_nop,
+    use_pc    => 0,
+    use_imm   => 0,
+    has_rd    => 0,
+    is_load   => 0,
+    is_store  => 0,
+    is_jump   => 0,
+    is_branch => 0,
+    is_mret   => 0,
+)
 
 component decoder
     port data  : in word_t
-    port instr : splice instruction
+    port instr : out instruction_t
 
     signal funct7 = data{31..25}
-    rs2           = data{24..20}
-    rs1           = data{19..15}
-    funct3        = data{14..12}
-    rd            = data{11.. 7}
+    signal rs2    = data{24..20}
+    signal rs1    = data{19..15}
+    signal funct3 = data{14..12}
+    signal rd     = data{11.. 7}
     signal opcode = data{ 6.. 0}
 
-    imm = case opcode of
+    signal imm = case opcode of
         opcode_op                => 0
         opcode_store             => {funct7, rd} as integer
         opcode_branch            => {data{31}, data{7}, data{30..25}, data{11..8}, 0} as integer
@@ -60,7 +77,7 @@ component decoder
         opcode_jal               => {data{31}, rs1, funct3, data{20}, data{30..21}, 0} as integer
         _                        => {funct7, rs2} as integer
 
-    alu_fn = case opcode of
+    signal alu_fn = case opcode of
         opcode_lui => alu_nop
         opcode_op, opcode_op_imm => (
             case funct3 of
@@ -84,12 +101,20 @@ component decoder
             )
         _ => alu_add
 
-    use_pc    = opcode == opcode_auipc or opcode == opcode_jal or opcode == opcode_branch
-    use_imm   = opcode /= opcode_op
-    is_load   = opcode == opcode_load
-    is_store  = opcode == opcode_store
-    is_mret   = opcode == opcode_system and funct3 == funct3_mret and imm == imm_mret
-    is_jump   = opcode == opcode_jal or opcode == opcode_jalr
-    is_branch = opcode == opcode_branch
-    has_rd    = not (is_branch or is_store or rd == 0)
+    instr = (
+        rd        => rd,
+        rs1       => rs1,
+        rs2       => rs2,
+        imm       => imm,
+        funct3    => funct3,
+        alu_fn    => alu_fn,
+        use_pc    => opcode == opcode_auipc or opcode == opcode_jal or opcode == opcode_branch,
+        use_imm   => opcode /= opcode_op,
+        is_load   => opcode == opcode_load,
+        is_store  => opcode == opcode_store,
+        is_mret   => opcode == opcode_system and funct3 == funct3_mret and imm == imm_mret,
+        is_jump   => opcode == opcode_jal or opcode == opcode_jalr,
+        is_branch => opcode == opcode_branch,
+        has_rd    => not (opcode == opcode_branch or opcode == opcode_store or rd == 0),
+    )
 end
