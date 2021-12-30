@@ -9,20 +9,20 @@ import "opcodes.mel"
 
 type register_index_t = unsigned(5)
 type funct3_t         = unsigned(3)
-type alu_fn_t         = unsigned(4) # TODO enumeration
 
-# TODO remove when alu_fn_t is an enumeration
-constant alu_nop  = 1
-constant alu_add  = 2
-constant alu_sub  = 3
-constant alu_slt  = 4
-constant alu_sltu = 5
-constant alu_and  = 6
-constant alu_or   = 7
-constant alu_xor  = 8
-constant alu_sll  = 9
-constant alu_srl  = 10
-constant alu_sra  = 11
+type alu_fn_t = enumeration(
+    ~alu_nop,
+    ~alu_add,
+    ~alu_sub,
+    ~alu_slt,
+    ~alu_sltu,
+    ~alu_and,
+    ~alu_or,
+    ~alu_xor,
+    ~alu_sll,
+    ~alu_srl,
+    ~alu_sra,
+)
 
 type instruction_t = record(
     rd        : register_index_t,
@@ -47,7 +47,7 @@ constant instr_nop = (
     rs2       => 0,
     imm       => 0,
     funct3    => funct3_add_sub,
-    alu_fn    => alu_nop,
+    alu_fn    => ~alu_nop,
     use_pc    => 0,
     use_imm   => 0,
     has_rd    => 0,
@@ -78,28 +78,28 @@ component decoder
         _                        => {funct7, rs2} as integer
 
     signal alu_fn = case opcode of
-        opcode_lui => alu_nop
+        opcode_lui => ~alu_nop
         opcode_op, opcode_op_imm => (
             case funct3 of
-                funct3_slt  => alu_slt
-                funct3_sltu => alu_sltu
-                funct3_and  => alu_and
-                funct3_or   => alu_or
-                funct3_xor  => alu_xor
-                funct3_sll  => alu_sll
+                funct3_slt  => ~alu_slt
+                funct3_sltu => ~alu_sltu
+                funct3_and  => ~alu_and
+                funct3_or   => ~alu_or
+                funct3_xor  => ~alu_xor
+                funct3_sll  => ~alu_sll
                 funct3_srl_sra =>
                     if funct7 == funct7_sub_sra then
-                        alu_sra
+                        ~alu_sra
                     else
-                        alu_srl
+                        ~alu_srl
                 funct3_add_sub =>
                     if opcode == opcode_op and funct7 == funct7_sub_sra then
-                        alu_sub
+                        ~alu_sub
                     else
-                        alu_add
-                _ => alu_add
+                        ~alu_add
+                _ => ~alu_add
             )
-        _ => alu_add
+        _ => ~alu_add
 
     instr = (
         rd        => rd,

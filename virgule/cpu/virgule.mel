@@ -11,6 +11,8 @@ import "arith_logic_unit.mel"
 import "branch_unit.mel"
 import "load_store_unit.mel"
 
+type state_t = enumeration(~fetch, ~decode, ~execute, ~load, ~store, ~writeback)
+
 component virgule
     port reset   : in bit
     port valid   : out bit
@@ -26,35 +28,27 @@ component virgule
     # state machine with one-hot encoding.
     #
 
-    # TODO We could use a record type here
-    constant state_fetch     = b'000001
-    constant state_decode    = b'000010
-    constant state_execute   = b'000100
-    constant state_load      = b'001000
-    constant state_store     = b'010000
-    constant state_writeback = b'100000
-
-    signal state : unsigned(6) = register(
-        state_fetch when reset,
+    signal state : state_t = register(
+        ~fetch when reset,
         case state of
-            state_fetch     => if ready then state_decode else state
-            state_decode    => state_execute
-            state_execute   => if     dec.instr.is_load  then state_load
-                               elseif dec.instr.is_store then state_store
-                               elseif dec.instr.has_rd   then state_writeback
-                               else                           state_fetch
-            state_load      => if ready then state_writeback else state
-            state_store     => if ready then state_fetch     else state
-            state_writeback => state_fetch
-            _               => state_fetch
+            ~fetch     => if ready then ~decode else state
+            ~decode    => ~execute
+            ~execute   => if     dec.instr.is_load  then ~load
+                          elseif dec.instr.is_store then ~store
+                          elseif dec.instr.has_rd   then ~writeback
+                          else                           ~fetch
+            ~load      => if ready then ~writeback else state
+            ~store     => if ready then ~fetch     else state
+            ~writeback => ~fetch
+            _          => ~fetch
     )
 
-    signal fetch_en     = state[0]
-    signal decode_en    = state[1]
-    signal execute_en   = state[2]
-    signal load_en      = state[3]
-    signal store_en     = state[4]
-    signal writeback_en = state[5]
+    signal fetch_en     = state == ~fetch
+    signal decode_en    = state == ~decode
+    signal execute_en   = state == ~execute
+    signal load_en      = state == ~load
+    signal store_en     = state == ~store
+    signal writeback_en = state == ~writeback
 
     #
     # Instruction decoding:
@@ -65,14 +59,14 @@ component virgule
     dec.data         = rdata_reg
     signal instr_reg = register(instr_nop, dec.instr when decode_en)
 
-    instance regs  = register_unit
+    instance regs  = register_unit(32)
     regs.reset     = reset
     regs.src_instr = dec.instr
     signal xs1_reg = register(0, regs.xs1 when decode_en)
     signal xs2_reg = register(0, regs.xs2 when decode_en)
 
-    signal alu_a_reg = register(0, if dec.instr.use_pc  then pc            else regs.xs1 when decode_en)
-    signal alu_b_reg = register(0, if dec.instr.use_imm then dec.instr.imm else regs.xs2 when decode_en)
+    signal alu_a_reg = register(0, if dec.instr.use_pc  then pc                      else regs.xs1 when decode_en)
+    signal alu_b_reg = register(0, if dec.instr.use_imm then dec.instr.imm as word_t else regs.xs2 when decode_en)
 
     #
     # Instruction execution:
@@ -81,6 +75,7 @@ component virgule
     #
 
     instance alu     = arith_logic_unit
+    alu.instr        = instr_reg
     alu.a            = alu_a_reg
     alu.b            = alu_b_reg
     signal alu_r_reg = register(0, alu.r when execute_en)
@@ -93,7 +88,7 @@ component virgule
     branch.xs1      = xs1_reg
     branch.xs2      = xs2_reg
     branch.address  = alu.r
-    branch.pc_next  = pc + 4 as word_t
+    branch.pc_next  = (pc + 4) as word_t
     signal pc       = register(0 when reset, branch.pc when execute_en)
 
     signal pc_next_reg = register(0, branch.pc_next when execute_en)
@@ -104,8 +99,6 @@ component virgule
     #
 
     signal rdata_reg   = register(0, rdata when valid and ready)
-    valid              = fetch_en or load_en or store_en
-    address            = if fetch_en then pc else alu_r_reg
 
     instance ld_st     = load_store_unit
     ld_st.instr        = instr_reg
@@ -113,6 +106,11 @@ component virgule
     ld_st.store_enable = store_en
     ld_st.store_data   = xs2_reg
     ld_st.rdata        = rdata_reg
+
+    valid              = fetch_en or load_en or store_en
+    address            = if fetch_en then pc else alu_r_reg
+    wstrobe            = ld_st.wstrobe
+    wdata              = ld_st.wdata
 
     #
     # Write back

@@ -22,27 +22,27 @@ component branch_unit
     port pc      : out word_t
 
     instance cmp = comparator
-    cmp.instr = instr
-    cmp.a     = xs1
-    cmp.b     = xs2
+    cmp.instr    = instr
+    cmp.a        = xs1
+    cmp.b        = xs2
 
     signal pc_target = if instr.is_mret then
             mepc
         elseif instr.is_jump or (instr.is_branch and cmp.taken) then
-            address[31 .. 2] << 2
+            address{31 .. 2} << 2
         else
             pc_next
 
-    signal irq_state = register(0 when reset,
-                                if     instr.is_mret then 0
-                                elseif irq           then 1
-                                else                      irq_state
-                                when enable)
+    signal irq_state : bit = register(0 when reset,
+                                      if     instr.is_mret then 0
+                                      elseif irq           then 1
+                                      else                      irq_state
+                                      when enable)
 
     signal accept_irq = irq and not irq_state
 
-    signal mepc = register(0 when reset,
-                           pc_target when enable and accept_irq)
+    signal mepc : word_t = register(0 when reset,
+                                    pc_target when enable and accept_irq)
 
     pc = if accept_irq then irq_address else pc_target
 end
