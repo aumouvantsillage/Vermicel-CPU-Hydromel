@@ -129,7 +129,7 @@
     (list (SW  10 4 #x100) 1     0   1     #x00000048 #b0000  'any)          ; F
     (list 0                0     0   0     'any       'any    'any)          ; D
     (list 0                0     0   0     'any       'any    'any)          ; E
-    (list 0                1     0   1     #x0000A100 #b1111  #x00008C15)  ; S
+    (list 0                1     0   1     #x0000A100 #b1111  #x00008C15)    ; S
 
     (list (LB  11 4 #x100) 1     0   1     #x0000004C #b0000  'any)          ; F
     (list 0                0     0   0     'any       'any    'any)          ; D

@@ -95,10 +95,10 @@
                  imm))
 
   (match (instruction-fmt opcode)
-    ;                                31       30 25      24 21       20       19 15      14 12      11 8        7          6 0
-    ['fmt-i (unsigned-concat  [imm* 11                               0] [rs1  4  0] [fn3 2  0] [rd  4          0] [opcode 6 0])]
-    ['fmt-s (unsigned-concat  [imm  11           5] [rs2 4           0] [rs1  4  0] [fn3 2  0] [imm 4          0] [opcode 6 0])]
-    ['fmt-b (unsigned-concat  [imm  12] [imm 10  5] [rs2 4           0] [rs1  4  0] [fn3 2  0] [imm 4 1] [imm 11] [opcode 6 0])]
-    ['fmt-u (unsigned-concat  [imm  31                                                     12] [rd  4          0] [opcode 6 0])]
-    ['fmt-j (unsigned-concat  [imm  20] [imm 10             1] [imm 11] [imm 19            12] [rd  4          0] [opcode 6 0])]
-    [_      (unsigned-concat  [fn7   6           0] [rs2 4           0] [rs1 4   0] [fn3 2  0] [rd  4          0] [opcode 6 0])]))
+    ;                                31         30 25        24 21         20         19 15        14 12        11 8          7            6 0
+    ['fmt-i (unsigned-concat `[,imm* 11                                     0] `[,rs1  4  0] `[,fn3 2  0] `[,rd  4            0] `[,opcode 6 0])]
+    ['fmt-s (unsigned-concat `[,imm  11             5] `[,rs2 4             0] `[,rs1  4  0] `[,fn3 2  0] `[,imm 4            0] `[,opcode 6 0])]
+    ['fmt-b (unsigned-concat `[,imm  12] `[,imm 10  5] `[,rs2 4             0] `[,rs1  4  0] `[,fn3 2  0] `[,imm 4 1] `[,imm 11] `[,opcode 6 0])]
+    ['fmt-u (unsigned-concat `[,imm  31                                                               12] `[,rd  4            0] `[,opcode 6 0])]
+    ['fmt-j (unsigned-concat `[,imm  20] `[,imm 10               1] `[,imm 11] `[,imm 19              12] `[,rd  4            0] `[,opcode 6 0])]
+    [_      (unsigned-concat `[,fn7   6             0] `[,rs2 4             0] `[,rs1 4   0] `[,fn3 2  0] `[,rd  4            0] `[,opcode 6 0])]))
