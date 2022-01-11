@@ -1,0 +1,17 @@
+#lang hydromel
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+import "common.mel"
+
+interface bus
+    port valid   : out bit
+    port ready   : in bit
+    port address : out word_t
+    port wstrobe : out wstrobe_t
+    port wdata   : out word_t
+    port rdata   : in word_t
+    port irq     : in bit
+end

@@ -5,6 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import "common.mel"
+import "bus.mel"
 import "decoder.mel"
 import "register_unit.mel"
 import "arith_logic_unit.mel"
@@ -14,14 +15,8 @@ import "load_store_unit.mel"
 type state_t = enumeration(~fetch, ~decode, ~execute, ~load, ~store, ~writeback)
 
 component virgule
-    port reset   : in bit
-    port valid   : out bit
-    port ready   : in bit
-    port address : out word_t
-    port wstrobe : out wstrobe_t
-    port wdata   : out word_t
-    port rdata   : in word_t
-    port irq     : in bit
+    port reset : in bit
+    port io    : splice bus
 
     #
     # Sequencer:
