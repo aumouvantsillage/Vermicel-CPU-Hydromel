@@ -1,0 +1,36 @@
+#lang hydromel
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+import "../cpu/bus.mel"
+import "../cpu/common.mel"
+
+# size is the RAM capacity, in words
+# content is the initial data, as an array of words
+component single_port_ram(size : natural, content : array(size, word_t))
+    port io : splice flip bus
+
+    constant address_width = unsigned_width(size - 1)
+
+    signal word_address = address{address_width + 2 .. 2}
+
+    rdata = data[word_address]
+
+    # TODO Make comprehensions work in this situation
+    signal data_next = {
+        if wstrobe{3} then wdata{31 .. 24} else rdata{31 .. 24},
+        if wstrobe{2} then wdata{23 .. 16} else rdata{23 .. 16},
+        if wstrobe{1} then wdata{15 ..  8} else rdata{15 ..  8},
+        if wstrobe{0} then wdata{ 7 ..  0} else rdata{ 7 ..  0},
+    }
+
+    signal data : array(size, word_t) = register(content,
+        data[word_address] <- data_next when valid)
+
+    # TODO Allow to customize the latency of read/write operations.
+    # At the moment, ready = valid.
+    ready = valid
+    irq   = 0
+end
