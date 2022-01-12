@@ -161,7 +161,7 @@
 ; instruction (LUI, AUIPC) followed by an I/S/B-type instruction.
 (define (split-imm imm)
   (define i (signed imm 32))
-  (define u (signed-concat [imm 31 12] [0 11 0]))
+  (define u (signed-concat* [imm 31 12] [0 11 0]))
   (define l (signed-slice imm 11 0))
   (values i (if (negative? l) (+ #x1000 u) u) l))
 
@@ -253,10 +253,10 @@
   (define padded-lst (append lst (make-list pad-len 0)))
 
   (for/list ([h (in-slice 4 padded-lst)])
-    (unsigned-concat [(fourth h) 7 0]
-                     [(third  h) 7 0]
-                     [(second h) 7 0]
-                     [(first  h) 7 0])))
+    (unsigned-concat* [(fourth h) 7 0]
+                      [(third  h) 7 0]
+                      [(second h) 7 0]
+                      [(first  h) 7 0])))
 
 
 (module+ test
