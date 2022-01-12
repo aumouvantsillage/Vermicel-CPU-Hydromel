@@ -1,0 +1,81 @@
+#lang hydromel
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+import "../virgule/cpu/common.mel"
+import "../virgule/cpu/bus.mel"
+import "../virgule/cpu/virgule.mel"
+import "../virgule/devices/memory.mel"
+import "system.rkt"
+
+component text_device
+    port io : splice flip bus
+
+    signal wdata_slice = case wstrobe of
+        b'0001 => wdata{ 7 .. 0}
+        b'0011 => wdata{15 .. 0}
+        b'1111 => wdata
+        _      => 0
+
+    signal enable = valid and (case wstrobe of
+        b'0001, b'0011, b'1111 => 1
+        _                      => 0)
+
+    signal disp = if not enable then 0
+                  elseif address{2} then show_char(wdata_slice)
+                  else show_int(wdata_slice)
+
+    ready = valid
+    rdata = 0
+    irq   = 0
+end
+
+component tick_device(period : natural)
+    port io : splice flip bus
+
+    signal enable = register(0, wdata{0} when valid and wstrobe{0} and not address{2})
+    signal cycle = enable and rdata == period - 1
+    rdata = register(0 when cycle, (rdata + 1) as word_t when enable)
+    irq = register(0, if     cycle                                            then 1
+                      elseif valid and wdata{0} and wstrobe{0} and address{2} then 0
+                      else                                                         irq)
+    ready = valid
+end
+
+constant tick_period  = 50
+constant text_address = x'8000000
+constant tick_address = x'8100000
+
+component system(ram_size : natural, ram_content : array(ram_size, word_t))
+    instance cpu = virgule
+    cpu.reset = register(1, 0)
+    cpu.ready = if     ram.valid  then ram.ready
+                elseif text.valid then text.ready
+                elseif tick.valid then tick.ready
+                else   0
+    cpu.rdata = if     ram.valid  then ram.rdata
+                elseif text.valid then text.rdata
+                elseif tick.valid then tick.rdata
+                else   0
+    cpu.irq   = tick.irq
+
+    instance ram = single_port_ram(ram_size, ram_content)
+    ram.valid    = cpu.valid and cpu.address{31 .. 2} < ram_size
+    ram.address  = cpu.address
+    ram.wstrobe  = cpu.wstrobe
+    ram.wdata    = cpu.wdata
+
+    instance text = text_device
+    text.valid    = cpu.valid and cpu.address >= text_address and cpu.address < text_address + 8
+    text.address  = cpu.address
+    text.wstrobe  = cpu.wstrobe
+    text.wdata    = cpu.wdata
+
+    instance tick = tick_device(tick_period)
+    tick.valid    = cpu.valid and cpu.address >= tick_address and cpu.address < tick_address + 8
+    tick.address  = cpu.address
+    tick.wstrobe  = cpu.wstrobe
+    tick.wdata    = cpu.wdata
+end
