@@ -14,7 +14,7 @@ component single_port_ram(size : natural, content : array(size, word_t))
 
     constant address_width = unsigned_width(size - 1)
 
-    signal word_address = address{address_width + 2 .. 2}
+    signal word_address = address{address_width + 1 .. 2}
 
     rdata = data[word_address]
 

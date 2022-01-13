@@ -5,18 +5,17 @@
 #lang racket
 
 (require
-  hydromel/lib/vcd
   hydromel/lib/helpers
   hydromel/lib/signal
   "../virgule/asm/assembler.rkt"
+  "../virgule/devices/memory.rkt"
   (only-in "../virgule/asm/opcodes.rkt" hydromel-constants)
-  "system.mel"
-  data/pvector)
+  "system.mel")
 
 (hydromel-constants text_address)
 
-(define hello
-  (asm
+(define-values (hello-len hello-data)
+  (asm->memory
     (LI    t0 text_address)
     (LA    t1 'str) ; The address of the string
     'loop
@@ -29,6 +28,6 @@
     (bytes->words #:asciiz #t
       #"Virgule says\n<< Hello! >>\n")))
 
-(define sys (system-make (length hello) (apply pvector hello)))
+(define sys (system-make hello-len hello-data))
 
 (define disp (signal-take (slot-ref sys text disp) 500))
