@@ -44,7 +44,7 @@ component tick_device(period : natural)
     ready = valid
 end
 
-constant tick_period  = 50
+constant tick_period  = 100
 constant text_address = x'8000000
 constant tick_address = x'8100000
 
