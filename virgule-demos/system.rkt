@@ -4,26 +4,10 @@
 
 #lang racket
 
-(require
-  hydromel
-  (for-syntax hydromel/lib/meta))
+(require hydromel/lib/function)
 
-(provide
-  show_int  show_int:impl  show_int:impl:return-type
-  show_char show_char:impl show_char:impl:return-type)
+(define-function show_int displayln)
 
-(define-syntax show_int (make-function #'show_int:impl))
-
-(define (show_int:impl n)
-  (displayln n))
-
-(define (show_int:impl:return-type tn)
-  (none))
-
-(define-syntax show_char (make-function #'show_char:impl))
-
-(define (show_char:impl n)
-  (display (integer->char n)))
-
-(define (show_char:impl:return-type tn)
-  (none))
+(define-function show_char
+  (λ (n)
+    (display (integer->char n))))
