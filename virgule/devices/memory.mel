@@ -27,7 +27,7 @@ component single_port_ram(size : natural, content : array(size, word_t))
     }
 
     signal data : array(size, word_t) = register(content,
-        data[word_address] <- data_next when valid)
+        data <- [word_address => data_next] when valid)
 
     # TODO Allow to customize the latency of read/write operations.
     # At the moment, ready = valid.
