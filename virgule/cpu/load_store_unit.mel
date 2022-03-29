@@ -28,7 +28,7 @@ component load_store_unit
     wstrobe = if store_enable then
             case instr.funct3 of
                 funct3_lb_sb, funct3_lbu => b'0001 << align
-                funct3_lh_sh, funct3_lhu => (b'0011 << align) as unsigned(4)
+                funct3_lh_sh, funct3_lhu => unsigned(4)|b'0011 << align|
                 funct3_lw_sw             => b'1111
                 _                        => b'0000
         else
@@ -38,9 +38,9 @@ component load_store_unit
 
     # TODO Maybe a sign_extend function would be better
     load_data = case instr.funct3 of
-        funct3_lb_sb => (aligned_rdata{7  .. 0} as integer) as word_t
+        funct3_lb_sb => word_t|integer|aligned_rdata{7  .. 0}||
         funct3_lbu   => aligned_rdata{7  .. 0}
-        funct3_lh_sh => (aligned_rdata{15 .. 0} as integer) as word_t
+        funct3_lh_sh => word_t|integer|aligned_rdata{15 .. 0}||
         funct3_lhu   => aligned_rdata{15 .. 0}
         _            => aligned_rdata
 end

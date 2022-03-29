@@ -37,7 +37,7 @@ component tick_device(period : natural)
 
     signal enable = register(0, wdata{0} when valid and wstrobe{0} and not address{2})
     signal cycle = enable and rdata == period - 1
-    rdata = register(0 when cycle, (rdata + 1) as word_t when enable)
+    rdata = register(0 when cycle, word_t|rdata + 1| when enable)
     irq = register(0, if     cycle                                            then 1
                       elseif valid and wdata{0} and wstrobe{0} and address{2} then 0
                       else                                                         irq)

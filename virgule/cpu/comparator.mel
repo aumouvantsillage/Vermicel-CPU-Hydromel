@@ -17,8 +17,8 @@ component comparator
     taken = case instr.funct3 of
         funct3_beq  => a  == b
         funct3_bne  => a  /= b
-        funct3_blt  => (a as integer) <  (b as integer)
-        funct3_bge  => (a as integer) >= (b as integer)
+        funct3_blt  => integer|a| <  integer|b|
+        funct3_bge  => integer|a| >= integer|b|
         funct3_bltu => a  <  b
         funct3_bgeu => a  >= b
         _           => 0

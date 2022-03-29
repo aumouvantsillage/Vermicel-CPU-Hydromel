@@ -60,8 +60,8 @@ component virgule
     signal xs1_reg = register(0, regs.xs1 when decode_en)
     signal xs2_reg = register(0, regs.xs2 when decode_en)
 
-    signal alu_a_reg = register(0, if dec.instr.use_pc  then pc                      else regs.xs1 when decode_en)
-    signal alu_b_reg = register(0, if dec.instr.use_imm then dec.instr.imm as word_t else regs.xs2 when decode_en)
+    signal alu_a_reg = register(0, if dec.instr.use_pc  then pc                    else regs.xs1 when decode_en)
+    signal alu_b_reg = register(0, if dec.instr.use_imm then word_t|dec.instr.imm| else regs.xs2 when decode_en)
 
     #
     # Instruction execution:
@@ -83,7 +83,7 @@ component virgule
     branch.xs1      = xs1_reg
     branch.xs2      = xs2_reg
     branch.address  = alu.r
-    branch.pc_next  = (pc + 4) as word_t
+    branch.pc_next  = word_t|pc + 4|
     signal pc       = register(0 when reset, branch.pc when execute_en)
 
     signal pc_next_reg = register(0, branch.pc_next when execute_en)

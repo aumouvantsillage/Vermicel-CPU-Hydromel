@@ -17,14 +17,14 @@ component arith_logic_unit
 
     r = case instr.alu_fn of
         ~alu_nop  => b
-        ~alu_add  => (a + b) as word_t
-        ~alu_sub  => (a - b) as word_t
-        ~alu_slt  => (a as integer) < (b as integer)
+        ~alu_add  => word_t|a + b|
+        ~alu_sub  => word_t|a - b|
+        ~alu_slt  => integer|a| < integer|b|
         ~alu_sltu => a < b
         ~alu_xor  => a xor b
         ~alu_or   => a or  b
         ~alu_and  => a and b
-        ~alu_sll  => (a << sh) as word_t
+        ~alu_sll  => word_t|a << sh|
         ~alu_srl  => a >> sh
-        ~alu_sra  => ((a as integer) >> sh) as word_t
+        ~alu_sra  => word_t|integer|a| >> sh|
 end
