@@ -6,7 +6,6 @@
 
 (require
   "../asm/assembler.rkt"
-  "../asm/opcodes.rkt"
   "../cpu/opcodes.mel"
   "../cpu/decoder.mel"
   hydromel/lib/signal

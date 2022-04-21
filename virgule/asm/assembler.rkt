@@ -12,7 +12,7 @@
     racket/list)
   hydromel/lib/numeric
   "../cpu/opcodes.mel"
-  "opcodes.rkt")
+  "formats.rkt")
 
 (provide
   (except-out (all-defined-out)
