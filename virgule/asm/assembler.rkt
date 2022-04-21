@@ -11,6 +11,7 @@
     racket/sequence
     racket/list)
   hydromel/lib/numeric
+  "../cpu/opcodes.mel"
   "opcodes.rkt")
 
 (provide

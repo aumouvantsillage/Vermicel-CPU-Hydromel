@@ -45,9 +45,9 @@
 (define test-count (length test-cases))
 
 (define lst-data (map fake-asm      (map first  test-cases)))
-(define lst-a    (map (word_t:impl) (map second test-cases)))
-(define lst-b    (map (word_t:impl) (map third  test-cases)))
-(define lst-x    (map (word_t:impl) (map fourth test-cases)))
+(define lst-a    (map (word_t) (map second test-cases)))
+(define lst-b    (map (word_t) (map third  test-cases)))
+(define lst-x    (map (word_t) (map fourth test-cases)))
 
 (define dec-inst (decoder-make))
 (slot-set! (dec-inst data) (list->signal lst-data))

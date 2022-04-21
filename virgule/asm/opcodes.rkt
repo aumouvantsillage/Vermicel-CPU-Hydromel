@@ -13,53 +13,6 @@
 
 (provide (all-defined-out))
 
-(define-syntax-parser hydromel-constants
-  [(_ hd tl ...)
-   #:with name (format-id #'hd "~a-constant" #'hd)
-   #'(begin
-       (provide hd)
-       (define hd (slot-data name))
-       (hydromel-constants tl ...))]
-
-  [(_)
-   #'(begin)])
-
-(hydromel-constants
-  opcode_load
-  opcode_op_imm
-  opcode_auipc
-  opcode_store
-  opcode_op
-  opcode_lui
-  opcode_branch
-  opcode_jalr
-  opcode_jal
-  opcode_system
-  funct3_jalr
-  funct3_beq
-  funct3_bne
-  funct3_blt
-  funct3_bge
-  funct3_bltu
-  funct3_bgeu
-  funct3_lb_sb
-  funct3_lh_sh
-  funct3_lw_sw
-  funct3_lbu
-  funct3_lhu
-  funct3_add_sub
-  funct3_slt
-  funct3_sltu
-  funct3_xor
-  funct3_or
-  funct3_and
-  funct3_sll
-  funct3_srl_sra
-  funct3_mret
-  funct7_default
-  funct7_sub_sra
-  imm_mret)
-
 (define (instruction-fmt opcode)
   (match opcode
     [(== opcode_op)                         'fmt-r]

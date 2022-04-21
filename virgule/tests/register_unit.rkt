@@ -50,9 +50,9 @@
 (define lst-src-data     (map fake-asm      (map first  test-cases)))
 (define lst-dest-data    (map fake-asm      (map second test-cases)))
 (define lst-enable                          (map third  test-cases))
-(define lst-xd           (map (word_t:impl) (map fourth test-cases)))
-(define lst-expected-xs1 (map (word_t:impl) (map fifth  test-cases)))
-(define lst-expected-xs2 (map (word_t:impl) (map sixth  test-cases)))
+(define lst-xd           (map (word_t) (map fourth test-cases)))
+(define lst-expected-xs1 (map (word_t) (map fifth  test-cases)))
+(define lst-expected-xs2 (map (word_t) (map sixth  test-cases)))
 
 (define dec-src-inst (decoder-make))
 (slot-set! (dec-src-inst data) (list->signal lst-src-data))

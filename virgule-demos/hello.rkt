@@ -9,10 +9,7 @@
   hydromel/lib/signal
   "../virgule/asm/assembler.rkt"
   "../virgule/devices/memory.rkt"
-  (only-in "../virgule/asm/opcodes.rkt" hydromel-constants)
   "system.mel")
-
-(hydromel-constants text_address)
 
 (define-values (hello-len hello-data)
   (asm->memory
