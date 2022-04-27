@@ -54,13 +54,13 @@
 (define lst-expected-xs1 (map (word_t) (map fifth  test-cases)))
 (define lst-expected-xs2 (map (word_t) (map sixth  test-cases)))
 
-(define dec-src-inst (decoder-make))
+(define dec-src-inst (decoder))
 (slot-set! (dec-src-inst data) (list->signal lst-src-data))
 
-(define dec-dest-inst (decoder-make))
+(define dec-dest-inst (decoder))
 (slot-set! (dec-dest-inst data) (list->signal lst-dest-data))
 
-(define reg-inst (register_unit-make 32))
+(define reg-inst (register_unit 32))
 (slot-set! (reg-inst src_instr)  (slot-ref dec-src-inst  instr))
 (slot-set! (reg-inst dest_instr) (slot-ref dec-dest-inst instr))
 (slot-set! (reg-inst reset)      (signal 0))

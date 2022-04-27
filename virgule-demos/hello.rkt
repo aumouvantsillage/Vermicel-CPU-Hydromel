@@ -25,6 +25,6 @@
     (bytes->words #:asciiz #t
       #"Virgule says\n<< Hello! >>\n")))
 
-(define sys (system-make hello-len hello-data))
+(define sys (system hello-len hello-data))
 
 (define disp (signal-take (slot-ref sys text disp) 500))

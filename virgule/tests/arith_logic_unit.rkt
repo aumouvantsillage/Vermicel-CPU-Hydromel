@@ -49,10 +49,10 @@
 (define lst-b    (map (word_t) (map third  test-cases)))
 (define lst-x    (map (word_t) (map fourth test-cases)))
 
-(define dec-inst (decoder-make))
+(define dec-inst (decoder))
 (slot-set! (dec-inst data) (list->signal lst-data))
 
-(define alu-inst (arith_logic_unit-make))
+(define alu-inst (arith_logic_unit))
 (slot-set! (alu-inst instr) (slot-ref dec-inst instr))
 (slot-set! (alu-inst a)     (list->signal lst-a))
 (slot-set! (alu-inst b)     (list->signal lst-b))

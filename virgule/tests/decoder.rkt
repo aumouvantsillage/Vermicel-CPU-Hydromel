@@ -118,7 +118,7 @@
 
 (define lst-data (map fake-asm (map first test-cases)))
 
-(define inst (decoder-make))
+(define inst (decoder))
 (slot-set! (inst data) (list->signal lst-data))
 
 (define field-names '(rd funct3 rs1 rs2 imm

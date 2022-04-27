@@ -191,7 +191,7 @@
 (define lst-expected (for/list ([c (in-list test-cases)])
                        (drop c 3)))
 
-(define cpu-inst (virgule-make))
+(define cpu-inst (virgule))
 (slot-set! (cpu-inst reset) (signal 0))
 (slot-set! (cpu-inst rdata) (list->signal lst-rdata))
 (slot-set! (cpu-inst ready) (list->signal lst-ready))

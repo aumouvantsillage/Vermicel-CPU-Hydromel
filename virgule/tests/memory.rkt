@@ -62,7 +62,7 @@
 
 (define test-count (length test-cases))
 
-(define ram-inst (single_port_ram-make (length ram-init) ram-init))
+(define ram-inst (single_port_ram (length ram-init) ram-init))
 (slot-set! (ram-inst valid)   (list->signal (map first  test-cases)))
 (slot-set! (ram-inst address) (list->signal (map second test-cases)))
 (slot-set! (ram-inst wstrobe) (list->signal (map third  test-cases)))

@@ -23,6 +23,6 @@
     (MV  t2 t3)    ; Update the next value
     (J   'loop)))  ; Loop indefinitely
 
-(define sys (system-make fib-len fib-data))
+(define sys (system fib-len fib-data))
 
 (define disp (signal-take (slot-ref sys text disp) 200))

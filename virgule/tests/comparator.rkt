@@ -56,10 +56,10 @@
 (define lst-b    (map (word_t) (map third  test-cases)))
 (define lst-x    (map (word_t) (map fourth test-cases)))
 
-(define dec-inst (decoder-make))
+(define dec-inst (decoder))
 (slot-set! (dec-inst data) (list->signal lst-data))
 
-(define cmp-inst (comparator-make))
+(define cmp-inst (comparator))
 (slot-set! (cmp-inst instr) (slot-ref dec-inst instr))
 (slot-set! (cmp-inst a)     (list->signal lst-a))
 (slot-set! (cmp-inst b)     (list->signal lst-b))

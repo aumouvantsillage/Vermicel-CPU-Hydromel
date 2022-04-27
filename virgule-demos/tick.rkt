@@ -30,6 +30,6 @@
     (SB t1 t0) ; Enable the tick device
     (J  0)))   ; Loop indefinitely
 
-(define sys (system-make tick-len tick-data))
+(define sys (system tick-len tick-data))
 
 (define disp (signal-take (slot-ref sys text disp) 500))
