@@ -11,7 +11,7 @@
   "../asm/assembler.rkt"
   hydromel/lib/signal
   hydromel/lib/slot
-  hydromel/lib/helpers
+  hydromel/lib/instance
   rackunit)
 
 (define test-cases
@@ -50,14 +50,14 @@
 (define lst-x    (map (word_t) (map fourth test-cases)))
 
 (define dec-inst (decoder))
-(slot-set! (dec-inst data) (list->signal lst-data))
+(instance-set! dec-inst 'data (list->signal lst-data))
 
 (define alu-inst (arith_logic_unit))
-(slot-set! (alu-inst instr) (slot-ref dec-inst instr))
-(slot-set! (alu-inst a)     (list->signal lst-a))
-(slot-set! (alu-inst b)     (list->signal lst-b))
+(instance-set! alu-inst 'instr (instance-ref dec-inst 'instr))
+(instance-set! alu-inst 'a     (list->signal lst-a))
+(instance-set! alu-inst 'b     (list->signal lst-b))
 
-(define lst-r (signal-take (slot-ref alu-inst r) test-count))
+(define lst-r (signal-take (instance-ref alu-inst 'r) test-count))
 
 (for ([n (in-range test-count)]
       [a (in-list lst-a)]

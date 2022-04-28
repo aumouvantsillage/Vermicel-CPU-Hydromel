@@ -10,7 +10,7 @@
   "../cpu/decoder.mel"
   hydromel/lib/signal
   hydromel/lib/slot
-  hydromel/lib/helpers
+  hydromel/lib/instance
   rackunit)
 
 (define test-cases
@@ -119,13 +119,13 @@
 (define lst-data (map fake-asm (map first test-cases)))
 
 (define inst (decoder))
-(slot-set! (inst data) (list->signal lst-data))
+(instance-set! inst 'data (list->signal lst-data))
 
 (define field-names '(rd funct3 rs1 rs2 imm
                       alu_fn use_pc use_imm has_rd
                       is_load is_store is_jump is_branch is_mret))
 
-(define lst-instr (signal-take (slot-ref inst instr) test-count))
+(define lst-instr (signal-take (instance-ref inst 'instr) test-count))
 
 (for ([(name i) (in-indexed field-names)])
   (for ([(instr j) (in-indexed lst-instr)])

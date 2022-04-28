@@ -8,7 +8,7 @@
   "../devices/memory.mel"
   hydromel/lib/signal
   hydromel/lib/slot
-  hydromel/lib/helpers
+  hydromel/lib/instance
   (only-in data/collection length)
   data/pvector
   rackunit)
@@ -63,16 +63,16 @@
 (define test-count (length test-cases))
 
 (define ram-inst (single_port_ram (length ram-init) ram-init))
-(slot-set! (ram-inst valid)   (list->signal (map first  test-cases)))
-(slot-set! (ram-inst address) (list->signal (map second test-cases)))
-(slot-set! (ram-inst wstrobe) (list->signal (map third  test-cases)))
-(slot-set! (ram-inst wdata)   (list->signal (map fourth test-cases)))
+(instance-set! ram-inst 'valid   (list->signal (map first  test-cases)))
+(instance-set! ram-inst 'address (list->signal (map second test-cases)))
+(instance-set! ram-inst 'wstrobe (list->signal (map third  test-cases)))
+(instance-set! ram-inst 'wdata   (list->signal (map fourth test-cases)))
 
 (define lst-ready-expected (map fifth test-cases))
 (define lst-rdata-expected (map sixth test-cases))
 
-(define lst-ready (signal-take (slot-ref ram-inst ready) test-count))
-(define lst-rdata (signal-take (slot-ref ram-inst rdata) test-count))
+(define lst-ready (signal-take (instance-ref ram-inst 'ready) test-count))
+(define lst-rdata (signal-take (instance-ref ram-inst 'rdata) test-count))
 
 (for ([n       (in-range test-count)]
       [ready-x (in-list lst-ready-expected)]

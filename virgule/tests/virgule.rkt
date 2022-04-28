@@ -8,7 +8,7 @@
   "../asm/assembler.rkt"
   "../cpu/virgule.mel"
   hydromel/lib/signal
-  hydromel/lib/helpers
+  hydromel/lib/instance
   rackunit)
 
 (define test-cases
@@ -192,16 +192,16 @@
                        (drop c 3)))
 
 (define cpu-inst (virgule))
-(slot-set! (cpu-inst reset) (signal 0))
-(slot-set! (cpu-inst rdata) (list->signal lst-rdata))
-(slot-set! (cpu-inst ready) (list->signal lst-ready))
-(slot-set! (cpu-inst irq)   (list->signal lst-irq))
+(instance-set! cpu-inst 'reset (signal 0))
+(instance-set! cpu-inst 'rdata (list->signal lst-rdata))
+(instance-set! cpu-inst 'ready (list->signal lst-ready))
+(instance-set! cpu-inst 'irq   (list->signal lst-irq))
 
 (define lst-result (map list
-                     (signal-take (slot-ref cpu-inst valid)   test-count)
-                     (signal-take (slot-ref cpu-inst address) test-count)
-                     (signal-take (slot-ref cpu-inst wstrobe) test-count)
-                     (signal-take (slot-ref cpu-inst wdata)   test-count)))
+                     (signal-take (instance-ref cpu-inst 'valid)   test-count)
+                     (signal-take (instance-ref cpu-inst 'address) test-count)
+                     (signal-take (instance-ref cpu-inst 'wstrobe) test-count)
+                     (signal-take (instance-ref cpu-inst 'wdata)   test-count)))
 
 (define labels '(valid address wstrobe wdata))
 

@@ -11,7 +11,7 @@
   "../asm/assembler.rkt"
   hydromel/lib/signal
   hydromel/lib/slot
-  hydromel/lib/helpers
+  hydromel/lib/instance
   rackunit)
 
 (define (write-value n)
@@ -55,20 +55,20 @@
 (define lst-expected-xs2 (map (word_t) (map sixth  test-cases)))
 
 (define dec-src-inst (decoder))
-(slot-set! (dec-src-inst data) (list->signal lst-src-data))
+(instance-set! dec-src-inst 'data (list->signal lst-src-data))
 
 (define dec-dest-inst (decoder))
-(slot-set! (dec-dest-inst data) (list->signal lst-dest-data))
+(instance-set! dec-dest-inst 'data (list->signal lst-dest-data))
 
 (define reg-inst (register_unit 32))
-(slot-set! (reg-inst src_instr)  (slot-ref dec-src-inst  instr))
-(slot-set! (reg-inst dest_instr) (slot-ref dec-dest-inst instr))
-(slot-set! (reg-inst reset)      (signal 0))
-(slot-set! (reg-inst enable)     (list->signal lst-enable))
-(slot-set! (reg-inst xd)         (list->signal lst-xd))
+(instance-set! reg-inst 'src_instr  (instance-ref dec-src-inst  'instr))
+(instance-set! reg-inst 'dest_instr (instance-ref dec-dest-inst 'instr))
+(instance-set! reg-inst 'reset      (signal 0))
+(instance-set! reg-inst 'enable     (list->signal lst-enable))
+(instance-set! reg-inst 'xd         (list->signal lst-xd))
 
-(define lst-xs1 (signal-take (slot-ref reg-inst xs1) test-count))
-(define lst-xs2 (signal-take (slot-ref reg-inst xs2) test-count))
+(define lst-xs1 (signal-take (instance-ref reg-inst 'xs1) test-count))
+(define lst-xs2 (signal-take (instance-ref reg-inst 'xs2) test-count))
 
 (for ([n  test-count]
       [si (in-list lst-src-data)]

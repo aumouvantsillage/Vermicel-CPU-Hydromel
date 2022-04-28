@@ -11,7 +11,7 @@
   "../asm/assembler.rkt"
   hydromel/lib/signal
   hydromel/lib/slot
-  hydromel/lib/helpers
+  hydromel/lib/instance
   rackunit)
 
 (define test-cases
@@ -57,14 +57,14 @@
 (define lst-x    (map (word_t) (map fourth test-cases)))
 
 (define dec-inst (decoder))
-(slot-set! (dec-inst data) (list->signal lst-data))
+(instance-set! dec-inst 'data (list->signal lst-data))
 
 (define cmp-inst (comparator))
-(slot-set! (cmp-inst instr) (slot-ref dec-inst instr))
-(slot-set! (cmp-inst a)     (list->signal lst-a))
-(slot-set! (cmp-inst b)     (list->signal lst-b))
+(instance-set! cmp-inst 'instr (instance-ref dec-inst 'instr))
+(instance-set! cmp-inst 'a     (list->signal lst-a))
+(instance-set! cmp-inst 'b     (list->signal lst-b))
 
-(define lst-r (signal-take (slot-ref cmp-inst taken) test-count))
+(define lst-r (signal-take (instance-ref cmp-inst 'taken) test-count))
 
 (for ([n (in-range test-count)]
       [a (in-list lst-a)]

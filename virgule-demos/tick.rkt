@@ -5,7 +5,7 @@
 #lang racket
 
 (require
-  hydromel/lib/helpers
+  hydromel/lib/instance
   hydromel/lib/signal
   "../virgule/asm/assembler.rkt"
   "../virgule/devices/memory.rkt"
@@ -32,4 +32,4 @@
 
 (define sys (system tick-len tick-data))
 
-(define disp (signal-take (slot-ref sys text disp) 500))
+(define disp (signal-take (instance-ref sys '(text disp)) 500))
