@@ -4,7 +4,7 @@
 
 #lang racket
 
-(require hydromel/lib/function)
+(require hydromel/sim)
 
 (define-function show_int displayln)
 

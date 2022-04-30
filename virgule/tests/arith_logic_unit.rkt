@@ -5,14 +5,12 @@
 #lang racket
 
 (require
+  rackunit
+  (except-in hydromel/sim zero)
   "../cpu/common.mel"
   "../cpu/decoder.mel"
   "../cpu/arith_logic_unit.mel"
-  "../asm/assembler.rkt"
-  hydromel/lib/signal
-  hydromel/lib/slot
-  hydromel/lib/instance
-  rackunit)
+  "../asm/assembler.rkt")
 
 (define test-cases
   (list
@@ -44,7 +42,7 @@
 
 (define test-count (length test-cases))
 
-(define lst-data (map fake-asm      (map first  test-cases)))
+(define lst-data (map fake-asm (map first  test-cases)))
 (define lst-a    (map (word_t) (map second test-cases)))
 (define lst-b    (map (word_t) (map third  test-cases)))
 (define lst-x    (map (word_t) (map fourth test-cases)))

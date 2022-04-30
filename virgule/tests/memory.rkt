@@ -5,13 +5,11 @@
 #lang racket
 
 (require
-  "../devices/memory.mel"
-  hydromel/lib/signal
-  hydromel/lib/slot
-  hydromel/lib/instance
+  rackunit
   (only-in data/collection length)
   data/pvector
-  rackunit)
+  hydromel/sim
+  "../devices/memory.mel")
 
 (define ram-init (pvector #x10203040
                           #x50607080

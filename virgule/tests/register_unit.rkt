@@ -5,14 +5,12 @@
 #lang racket
 
 (require
+  rackunit
+  (except-in hydromel/sim zero)
   "../cpu/common.mel"
   "../cpu/decoder.mel"
   "../cpu/register_unit.mel"
-  "../asm/assembler.rkt"
-  hydromel/lib/signal
-  hydromel/lib/slot
-  hydromel/lib/instance
-  rackunit)
+  "../asm/assembler.rkt")
 
 (define (write-value n)
   (* #x1000 (add1 n)))

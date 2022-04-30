@@ -5,11 +5,10 @@
 #lang racket
 
 (require
+  rackunit
+  (except-in hydromel/sim zero)
   "../asm/assembler.rkt"
-  "../cpu/virgule.mel"
-  hydromel/lib/signal
-  hydromel/lib/instance
-  rackunit)
+  "../cpu/virgule.mel")
 
 (define test-cases
   (list

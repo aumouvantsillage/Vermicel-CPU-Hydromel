@@ -5,8 +5,7 @@
 #lang racket
 
 (require
-  hydromel/lib/instance
-  hydromel/lib/signal
+  (except-in hydromel/sim zero)
   "../virgule/asm/assembler.rkt"
   "../virgule/devices/memory.rkt"
   "system.mel")
