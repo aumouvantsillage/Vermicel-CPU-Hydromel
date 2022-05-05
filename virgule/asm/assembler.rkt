@@ -10,7 +10,7 @@
     racket/syntax
     racket/sequence
     racket/list)
-  hydromel/sim
+  hydromel/support
   "../cpu/opcodes.mel"
   "formats.rkt")
 

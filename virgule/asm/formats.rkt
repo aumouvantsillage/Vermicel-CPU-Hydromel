@@ -6,7 +6,7 @@
 
 (require
   "../cpu/opcodes.mel"
-  hydromel/sim
+  hydromel/support
   syntax/parse/define
   (for-syntax racket/syntax))
 

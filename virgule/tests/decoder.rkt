@@ -6,7 +6,7 @@
 
 (require
   rackunit
-  (except-in hydromel/sim zero)
+  (except-in hydromel/support zero)
   "../asm/assembler.rkt"
   "../cpu/opcodes.mel"
   "../cpu/decoder.mel")

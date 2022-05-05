@@ -6,7 +6,7 @@
 
 (require
   rackunit
-  (except-in hydromel/sim zero)
+  (except-in hydromel/support zero)
   "../cpu/common.mel"
   "../cpu/decoder.mel"
   "../cpu/register_unit.mel"

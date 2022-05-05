@@ -8,7 +8,7 @@
   rackunit
   (only-in data/collection length)
   data/pvector
-  hydromel/sim
+  hydromel/support
   "../devices/memory.mel")
 
 (define ram-init (pvector #x10203040
