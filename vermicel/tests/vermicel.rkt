@@ -8,7 +8,7 @@
   rackunit
   (except-in hydromel/support zero)
   "../asm/assembler.rkt"
-  "../cpu/virgule.mel")
+  "../cpu/vermicel.mel")
 
 (define test-cases
   (list
@@ -190,7 +190,7 @@
 (define lst-expected (for/list ([c (in-list test-cases)])
                        (drop c 3)))
 
-(define cpu-inst (virgule))
+(define cpu-inst (vermicel))
 (instance-set! cpu-inst 'reset (signal 0))
 (instance-set! cpu-inst 'rdata (list->signal lst-rdata))
 (instance-set! cpu-inst 'ready (list->signal lst-ready))
@@ -211,4 +211,4 @@
         [rv (in-list r)]
         [xv (in-list x)]
         #:when (not (equal? 'any xv)))
-    (test-equal? (format "Virgule #~a: ~a" n l) rv xv)))
+    (test-equal? (format "Vermicel #~a: ~a" n l) rv xv)))

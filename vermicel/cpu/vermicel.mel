@@ -14,7 +14,7 @@ import "load_store_unit.mel"
 
 type state_t = enumeration(~fetch, ~decode, ~execute, ~load, ~store, ~writeback)
 
-component virgule
+component vermicel
     port reset : in bit
     port io    : splice bus
 

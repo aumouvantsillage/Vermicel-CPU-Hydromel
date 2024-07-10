@@ -4,10 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import "../virgule/cpu/common.mel"
-import "../virgule/cpu/bus.mel"
-import "../virgule/cpu/virgule.mel"
-import "../virgule/devices/memory.mel"
+import "../vermicel/cpu/common.mel"
+import "../vermicel/cpu/bus.mel"
+import "../vermicel/cpu/vermicel.mel"
+import "../vermicel/devices/memory.mel"
 import "system.rkt"
 
 component text_device
@@ -49,7 +49,7 @@ constant text_address = x'8000000
 constant tick_address = x'8100000
 
 component system(ram_size : natural, ram_content : array(ram_size, word_t))
-    instance cpu = virgule
+    instance cpu = vermicel
     cpu.reset = register(1, 0)
     cpu.ready = if     ram.valid  then ram.ready
                 elseif text.valid then text.ready

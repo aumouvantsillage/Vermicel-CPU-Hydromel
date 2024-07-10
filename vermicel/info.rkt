@@ -3,5 +3,5 @@
 ; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #lang info
-(define collection "virgule")
+(define collection "vermicel")
 (define deps '("hydromel"))

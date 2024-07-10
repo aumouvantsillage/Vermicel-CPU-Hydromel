@@ -6,8 +6,8 @@
 
 (require
   (except-in hydromel/support zero)
-  "../virgule/asm/assembler.rkt"
-  "../virgule/devices/memory.rkt"
+  "../vermicel/asm/assembler.rkt"
+  "../vermicel/devices/memory.rkt"
   "system.mel")
 
 (define-values (fib-len fib-data)

@@ -6,8 +6,8 @@
 
 (require
   (except-in hydromel/support zero)
-  "../virgule/asm/assembler.rkt"
-  "../virgule/devices/memory.rkt"
+  "../vermicel/asm/assembler.rkt"
+  "../vermicel/devices/memory.rkt"
   "system.mel")
 
 (define-values (hello-len hello-data)
@@ -22,7 +22,7 @@
     (J     'loop)   ; Loop
     'str
     (bytes->words #:asciiz #t
-      #"Virgule says\n<< Hello! >>\n")))
+      #"Vermicel says\n<< Hello! >>\n")))
 
 (define sys (system hello-len hello-data))
 
